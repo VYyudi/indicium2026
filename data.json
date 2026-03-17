@@ -1,0 +1,580 @@
+{
+  "kpis": {
+    "total_records": 10364,
+    "unique_clients": 49,
+    "unique_products": 150,
+    "total_revenue": 2752951440.3,
+    "total_profit": -118121327.37,
+    "avg_ticket": 265626.35,
+    "avg_margin": -3.61,
+    "loss_sales_pct": 66.7,
+    "period_start": "2023-01-01",
+    "period_end": "2024-12-31"
+  },
+  "monthly": [
+    {
+      "month": "2023-01",
+      "revenue": 108731806.45,
+      "profit": -7118478.44,
+      "orders": 445
+    },
+    {
+      "month": "2023-02",
+      "revenue": 103042524.5,
+      "profit": -3235411.1,
+      "orders": 389
+    },
+    {
+      "month": "2023-03",
+      "revenue": 111311652.25,
+      "profit": -2796450.83,
+      "orders": 418
+    },
+    {
+      "month": "2023-04",
+      "revenue": 115746472.05,
+      "profit": -4005970.11,
+      "orders": 447
+    },
+    {
+      "month": "2023-05",
+      "revenue": 112396333.0,
+      "profit": -3504704.47,
+      "orders": 489
+    },
+    {
+      "month": "2023-06",
+      "revenue": 105870914.55,
+      "profit": -2154328.76,
+      "orders": 413
+    },
+    {
+      "month": "2023-07",
+      "revenue": 94187792.3,
+      "profit": -3021900.06,
+      "orders": 437
+    },
+    {
+      "month": "2023-08",
+      "revenue": 115050817.75,
+      "profit": -7398768.4,
+      "orders": 414
+    },
+    {
+      "month": "2023-09",
+      "revenue": 107057976.5,
+      "profit": -7456343.08,
+      "orders": 423
+    },
+    {
+      "month": "2023-10",
+      "revenue": 107035787.15,
+      "profit": -4899050.64,
+      "orders": 412
+    },
+    {
+      "month": "2023-11",
+      "revenue": 133219263.3,
+      "profit": -5455633.82,
+      "orders": 460
+    },
+    {
+      "month": "2023-12",
+      "revenue": 136338930.6,
+      "profit": -8033340.14,
+      "orders": 455
+    },
+    {
+      "month": "2024-01",
+      "revenue": 112142408.4,
+      "profit": -5574658.07,
+      "orders": 427
+    },
+    {
+      "month": "2024-02",
+      "revenue": 128457916.25,
+      "profit": -6765221.24,
+      "orders": 411
+    },
+    {
+      "month": "2024-03",
+      "revenue": 116860817.4,
+      "profit": -6279184.86,
+      "orders": 439
+    },
+    {
+      "month": "2024-04",
+      "revenue": 111326090.05,
+      "profit": -6793316.36,
+      "orders": 430
+    },
+    {
+      "month": "2024-05",
+      "revenue": 98487586.0,
+      "profit": -7535046.7,
+      "orders": 412
+    },
+    {
+      "month": "2024-06",
+      "revenue": 105578818.2,
+      "profit": -5042253.67,
+      "orders": 430
+    },
+    {
+      "month": "2024-07",
+      "revenue": 114248816.6,
+      "profit": -5058230.44,
+      "orders": 407
+    },
+    {
+      "month": "2024-08",
+      "revenue": 129995969.95,
+      "profit": -6041692.77,
+      "orders": 468
+    },
+    {
+      "month": "2024-09",
+      "revenue": 119730263.8,
+      "profit": -3024988.7,
+      "orders": 429
+    },
+    {
+      "month": "2024-10",
+      "revenue": 133609107.85,
+      "profit": -2770560.14,
+      "orders": 474
+    },
+    {
+      "month": "2024-11",
+      "revenue": 126185488.35,
+      "profit": -2457700.7,
+      "orders": 456
+    },
+    {
+      "month": "2024-12",
+      "revenue": 106337887.05,
+      "profit": -1698093.86,
+      "orders": 379
+    }
+  ],
+  "weekday": [
+    {
+      "weekday": "Segunda",
+      "revenue": 3650827.68
+    },
+    {
+      "weekday": "Terça",
+      "revenue": 3831253.54
+    },
+    {
+      "weekday": "Quarta",
+      "revenue": 3603848.49
+    },
+    {
+      "weekday": "Quinta",
+      "revenue": 3765328.12
+    },
+    {
+      "weekday": "Sexta",
+      "revenue": 4017559.6
+    },
+    {
+      "weekday": "Sábado",
+      "revenue": 3999510.71
+    },
+    {
+      "weekday": "Domingo",
+      "revenue": 3496792.69
+    }
+  ],
+  "loss_products": [
+    {
+      "product_name": "Motor de Popa Volvo Hydro Dash 256HP",
+      "category": "Propulsão",
+      "total_loss": -39154417.48,
+      "n_sales": 78
+    },
+    {
+      "product_name": "Motor Diesel Yanmar Dash Nitro 184HP",
+      "category": "Propulsão",
+      "total_loss": -18193300.24,
+      "n_sales": 44
+    },
+    {
+      "product_name": "Motor Diesel Yanmar Velocity 37HP",
+      "category": "Propulsão",
+      "total_loss": -6083142.06,
+      "n_sales": 260
+    },
+    {
+      "product_name": "Motor Diesel Volvo Flow Oceanic 259HP",
+      "category": "Propulsão",
+      "total_loss": -5747206.33,
+      "n_sales": 74
+    },
+    {
+      "product_name": "Motor Elétrico Torqeedo Pulse 300HP",
+      "category": "Propulsão",
+      "total_loss": -5657361.12,
+      "n_sales": 60
+    },
+    {
+      "product_name": "Motor de Popa Honda Torque 228HP",
+      "category": "Propulsão",
+      "total_loss": -5604174.64,
+      "n_sales": 85
+    },
+    {
+      "product_name": "Motor Elétrico Tohatsu Zenith Oceanic 113HP",
+      "category": "Propulsão",
+      "total_loss": -3997939.19,
+      "n_sales": 63
+    },
+    {
+      "product_name": "Motor Elétrico Honda Mako Axis 131HP",
+      "category": "Propulsão",
+      "total_loss": -3402241.93,
+      "n_sales": 55
+    },
+    {
+      "product_name": "Motor Elétrico Torqeedo Ion Orca Vox 186HP",
+      "category": "Propulsão",
+      "total_loss": -3010691.71,
+      "n_sales": 65
+    },
+    {
+      "product_name": "Motor de Popa Honda Velocity Drift 258HP",
+      "category": "Propulsão",
+      "total_loss": -2676519.13,
+      "n_sales": 35
+    },
+    {
+      "product_name": "Motor de Popa Tohatsu Boost Swift 126HP",
+      "category": "Propulsão",
+      "total_loss": -2218913.88,
+      "n_sales": 48
+    },
+    {
+      "product_name": "Rádio Simrad Orca",
+      "category": "Eletrônicos",
+      "total_loss": -2036134.84,
+      "n_sales": 70
+    },
+    {
+      "product_name": "Motor Elétrico Honda Flux Ultra 273HP",
+      "category": "Propulsão",
+      "total_loss": -1979480.6,
+      "n_sales": 51
+    },
+    {
+      "product_name": "Motor de Popa Torqeedo Core Hydra Flux 162HP",
+      "category": "Propulsão",
+      "total_loss": -1738816.3,
+      "n_sales": 33
+    },
+    {
+      "product_name": "Motor Diesel Parsun Velocity Abyss Orca 235HP",
+      "category": "Propulsão",
+      "total_loss": -1703396.83,
+      "n_sales": 55
+    }
+  ],
+  "clients": [
+    {
+      "name": "Débora Paiva",
+      "total_revenue": 52052241.6,
+      "total_profit": -826593.29,
+      "num_orders": 215,
+      "avg_margin": -3.3,
+      "Eletrônicos": 19.3,
+      "Propulsão": 77.3,
+      "Ancoragem": 3.4
+    },
+    {
+      "name": "Daniela Borges Vieira Farias Mendonça",
+      "total_revenue": 59663694.4,
+      "total_profit": -1160447.81,
+      "num_orders": 200,
+      "avg_margin": -3.22,
+      "Eletrônicos": 12.5,
+      "Propulsão": 85.4,
+      "Ancoragem": 2.0
+    },
+    {
+      "name": "Victor Araújo Azevedo Tavares Correia",
+      "total_revenue": 42983740.5,
+      "total_profit": -1318790.07,
+      "num_orders": 199,
+      "avg_margin": -3.37,
+      "Eletrônicos": 23.3,
+      "Propulsão": 73.2,
+      "Ancoragem": 3.5
+    },
+    {
+      "name": "Sandra Rocha Oliveira Soares Peixoto",
+      "total_revenue": 52084185.55,
+      "total_profit": -1339955.7,
+      "num_orders": 199,
+      "avg_margin": -2.85,
+      "Eletrônicos": 16.8,
+      "Propulsão": 80.6,
+      "Ancoragem": 2.6
+    },
+    {
+      "name": "Flávia Nunes Martins Ribeiro Coelho",
+      "total_revenue": 43968874.55,
+      "total_profit": -1366128.17,
+      "num_orders": 204,
+      "avg_margin": -2.8,
+      "Eletrônicos": 23.5,
+      "Propulsão": 73.7,
+      "Ancoragem": 2.8
+    },
+    {
+      "name": "Gabriela Barros Lacerda",
+      "total_revenue": 67668333.05,
+      "total_profit": -1428671.05,
+      "num_orders": 202,
+      "avg_margin": -2.76,
+      "Eletrônicos": 17.0,
+      "Propulsão": 81.2,
+      "Ancoragem": 1.8
+    },
+    {
+      "name": "Diego Costa Guedes Cunha",
+      "total_revenue": 46363683.75,
+      "total_profit": -1433244.75,
+      "num_orders": 221,
+      "avg_margin": -3.16,
+      "Eletrônicos": 24.0,
+      "Propulsão": 72.9,
+      "Ancoragem": 3.1
+    },
+    {
+      "name": "Gabriela Moraes Macedo Nunes",
+      "total_revenue": 49612703.55,
+      "total_profit": -1444494.97,
+      "num_orders": 211,
+      "avg_margin": -4.01,
+      "Eletrônicos": 16.7,
+      "Propulsão": 80.7,
+      "Ancoragem": 2.6
+    },
+    {
+      "name": "Jéssica Farias Cunha",
+      "total_revenue": 55934175.75,
+      "total_profit": -1600405.25,
+      "num_orders": 223,
+      "avg_margin": -3.88,
+      "Eletrônicos": 14.6,
+      "Propulsão": 82.7,
+      "Ancoragem": 2.7
+    },
+    {
+      "name": "Bruna Mendonça Rodrigues",
+      "total_revenue": 48094911.05,
+      "total_profit": -1609232.86,
+      "num_orders": 217,
+      "avg_margin": -3.51,
+      "Eletrônicos": 23.4,
+      "Propulsão": 73.1,
+      "Ancoragem": 3.4
+    },
+    {
+      "name": "Gabriela Silva Vieira Amaral",
+      "total_revenue": 56045194.0,
+      "total_profit": -1627385.67,
+      "num_orders": 219,
+      "avg_margin": -3.12,
+      "Eletrônicos": 20.1,
+      "Propulsão": 76.7,
+      "Ancoragem": 3.1
+    },
+    {
+      "name": "Adriana Guedes Borges Alves Rocha",
+      "total_revenue": 56678245.05,
+      "total_profit": -1629708.15,
+      "num_orders": 217,
+      "avg_margin": -3.15,
+      "Eletrônicos": 16.0,
+      "Propulsão": 80.4,
+      "Ancoragem": 3.5
+    },
+    {
+      "name": "Carla Lopes Alves Pacheco Rocha",
+      "total_revenue": 64917152.55,
+      "total_profit": -1643598.14,
+      "num_orders": 245,
+      "avg_margin": -2.87,
+      "Eletrônicos": 14.1,
+      "Propulsão": 82.8,
+      "Ancoragem": 3.1
+    },
+    {
+      "name": "Victor Torres Monteiro",
+      "total_revenue": 43800927.05,
+      "total_profit": -1650126.08,
+      "num_orders": 184,
+      "avg_margin": -2.49,
+      "Eletrônicos": 17.0,
+      "Propulsão": 80.2,
+      "Ancoragem": 2.8
+    },
+    {
+      "name": "Bianca Barros Rocha Torres Siqueira",
+      "total_revenue": 50288430.85,
+      "total_profit": -1765915.05,
+      "num_orders": 217,
+      "avg_margin": -2.95,
+      "Eletrônicos": 21.8,
+      "Propulsão": 74.9,
+      "Ancoragem": 3.2
+    }
+  ],
+  "categories": [
+    {
+      "category": "Ancoragem",
+      "revenue": 75608130.35,
+      "profit": -2210220.05,
+      "orders": 3555
+    },
+    {
+      "category": "Eletrônicos",
+      "revenue": 467194126.8,
+      "profit": -10886846.85,
+      "orders": 3397
+    },
+    {
+      "category": "Propulsão",
+      "revenue": 2210149183.15,
+      "profit": -105024260.47,
+      "orders": 3412
+    }
+  ],
+  "top_profitable": [
+    {
+      "product_name": "Motor Diesel Tohatsu Zenith 60HP",
+      "category": "Propulsão",
+      "total_profit": 1657500.51,
+      "n_sales": 64
+    },
+    {
+      "product_name": "Motor de Popa Tohatsu Ion Core Nautic 53HP",
+      "category": "Propulsão",
+      "total_profit": 1597574.8,
+      "n_sales": 67
+    },
+    {
+      "product_name": "GPS Furuno Vector",
+      "category": "Eletrônicos",
+      "total_profit": 970958.58,
+      "n_sales": 67
+    },
+    {
+      "product_name": "Motor de Popa Volvo Maré 69HP",
+      "category": "Propulsão",
+      "total_profit": 967320.1,
+      "n_sales": 69
+    },
+    {
+      "product_name": "Motor Diesel Honda Aero 205HP",
+      "category": "Propulsão",
+      "total_profit": 823317.84,
+      "n_sales": 68
+    },
+    {
+      "product_name": "Sonda AIS Barracuda",
+      "category": "Eletrônicos",
+      "total_profit": 810279.69,
+      "n_sales": 50
+    },
+    {
+      "product_name": "Motor de Popa Yamaha Thrust Marlin Nexus 182HP",
+      "category": "Propulsão",
+      "total_profit": 802797.5,
+      "n_sales": 58
+    },
+    {
+      "product_name": "GPS AIS Orca Marlin Velocity",
+      "category": "Eletrônicos",
+      "total_profit": 610851.2,
+      "n_sales": 47
+    },
+    {
+      "product_name": "Motor Elétrico Yamaha Orca Storm Zenith 11HP",
+      "category": "Propulsão",
+      "total_profit": 512084.89,
+      "n_sales": 71
+    },
+    {
+      "product_name": "Motor Diesel Honda Leviathan 133HP",
+      "category": "Propulsão",
+      "total_profit": 470644.78,
+      "n_sales": 47
+    }
+  ],
+  "seasonality": [
+    {
+      "month_name": "Jan",
+      "index": -3.7
+    },
+    {
+      "month_name": "Fev",
+      "index": 0.9
+    },
+    {
+      "month_name": "Mar",
+      "index": -0.5
+    },
+    {
+      "month_name": "Abr",
+      "index": -1.0
+    },
+    {
+      "month_name": "Mai",
+      "index": -8.1
+    },
+    {
+      "month_name": "Jun",
+      "index": -7.8
+    },
+    {
+      "month_name": "Jul",
+      "index": -9.1
+    },
+    {
+      "month_name": "Ago",
+      "index": 6.8
+    },
+    {
+      "month_name": "Set",
+      "index": -1.1
+    },
+    {
+      "month_name": "Out",
+      "index": 4.9
+    },
+    {
+      "month_name": "Nov",
+      "index": 13.1
+    },
+    {
+      "month_name": "Dez",
+      "index": 5.8
+    }
+  ],
+  "forecast": [
+    {
+      "month": "2025-01",
+      "revenue": 121836631.06
+    },
+    {
+      "month": "2025-02",
+      "revenue": 122407056.75
+    },
+    {
+      "month": "2025-03",
+      "revenue": 122977482.43
+    }
+  ]
+}

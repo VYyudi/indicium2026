@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LH Nautical — Análise de Dados 2023–2024</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --navy: #0a1628; --navy2: #0f2044; --teal: #00d4b8; --teal2: #00a896;
+    --amber: #f5a623; --red: #e8394a; --white: #f0f4f8; --grey: #8899aa;
+    --card: #0d1f38; --card2: #112240; --border: rgba(0,212,184,0.15);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--navy); color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.6; overflow-x: hidden; }
+
+  /* LOADING */
+  #loading {
+    position: fixed; inset: 0; background: var(--navy);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 999; gap: 16px;
+  }
+  #loading .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid rgba(0,212,184,0.2);
+    border-top-color: var(--teal);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  #loading p { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--grey); letter-spacing: 2px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ERROR */
+  #error-msg {
+    display: none; position: fixed; inset: 0; background: var(--navy);
+    align-items: center; justify-content: center; z-index: 999;
+    flex-direction: column; gap: 16px; padding: 40px; text-align: center;
+  }
+  #error-msg h2 { font-family: 'Bebas Neue'; font-size: 32px; color: var(--red); letter-spacing: 3px; }
+  #error-msg p { color: var(--grey); font-size: 13px; max-width: 480px; line-height: 1.8; }
+  #error-msg code { background: var(--card); padding: 12px 20px; border-radius: 6px; font-family: 'DM Mono'; font-size: 12px; color: var(--teal); display: block; margin-top: 8px; }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #061020 0%, var(--navy2) 60%, #0a1e3a 100%);
+    border-bottom: 2px solid var(--teal);
+    padding: 36px 48px 28px; position: relative; overflow: hidden;
+  }
+  header::before { content: ''; position: absolute; top: -60px; right: -60px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(0,212,184,0.08) 0%, transparent 70%); border-radius: 50%; }
+  header::after { content: '⚓'; position: absolute; right: 48px; top: 50%; transform: translateY(-50%); font-size: 80px; opacity: 0.07; }
+  .header-tag { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--teal); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px; }
+  header h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px, 5vw, 64px); letter-spacing: 4px; line-height: 1; }
+  header h1 span { color: var(--teal); }
+  .header-sub { color: var(--grey); font-size: 13px; margin-top: 8px; font-weight: 300; }
+
+  /* NAV */
+  nav { background: var(--card); border-bottom: 1px solid var(--border); padding: 0 48px; display: flex; overflow-x: auto; }
+  nav button { background: none; border: none; color: var(--grey); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; padding: 16px 24px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; }
+  nav button:hover { color: var(--white); }
+  nav button.active { color: var(--teal); border-bottom-color: var(--teal); }
+
+  main { padding: 40px 48px; max-width: 1400px; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* KPI CARDS */
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 40px; }
+  .kpi-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px; position: relative; overflow: hidden; transition: transform 0.2s, border-color 0.2s; }
+  .kpi-card:hover { transform: translateY(-2px); border-color: rgba(0,212,184,0.4); }
+  .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+  .kpi-card.teal::before { background: var(--teal); }
+  .kpi-card.amber::before { background: var(--amber); }
+  .kpi-card.red::before { background: var(--red); }
+  .kpi-card.blue::before { background: #4a9eff; }
+  .kpi-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--grey); margin-bottom: 8px; font-family: 'DM Mono', monospace; }
+  .kpi-value { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 1px; line-height: 1; }
+  .kpi-value.teal { color: var(--teal); }
+  .kpi-value.amber { color: var(--amber); }
+  .kpi-value.red { color: var(--red); }
+  .kpi-value.blue { color: #4a9eff; }
+  .kpi-note { font-size: 11px; color: var(--grey); margin-top: 4px; }
+
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 3px; color: var(--teal); margin-bottom: 6px; }
+  .section-desc { font-size: 13px; color: var(--grey); margin-bottom: 28px; max-width: 720px; line-height: 1.7; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px; }
+  @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } main { padding: 24px; } nav { padding: 0 16px; } header { padding: 24px; } }
+
+  .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 24px; margin-bottom: 28px; }
+  .chart-card h3 { font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--grey); margin-bottom: 4px; }
+  .chart-card .chart-subtitle { font-size: 12px; color: rgba(136,153,170,0.6); margin-bottom: 20px; }
+  .chart-wrap { position: relative; height: 260px; }
+  .chart-wrap.tall { height: 340px; }
+  .chart-wrap.xtall { height: 440px; }
+
+  /* TABLES */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .data-table thead tr { border-bottom: 2px solid var(--border); }
+  .data-table thead th { text-align: left; padding: 10px 12px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--grey); font-family: 'DM Mono', monospace; font-weight: 500; }
+  .data-table tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
+  .data-table tbody tr:hover { background: rgba(0,212,184,0.04); }
+  .data-table tbody td { padding: 11px 12px; }
+  .data-table .num { font-family: 'DM Mono', monospace; font-size: 12px; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 600; letter-spacing: 0.5px; }
+  .badge-neg { background: rgba(232,57,74,0.15); color: var(--red); }
+  .badge-elet { background: rgba(74,158,255,0.15); color: #4a9eff; }
+  .badge-prop { background: rgba(245,166,35,0.15); color: var(--amber); }
+  .badge-anc { background: rgba(0,212,184,0.15); color: var(--teal); }
+
+  .insight-box { background: rgba(0,212,184,0.05); border: 1px solid rgba(0,212,184,0.2); border-left: 3px solid var(--teal); border-radius: 0 6px 6px 0; padding: 16px 20px; margin-bottom: 24px; font-size: 13px; color: rgba(240,244,248,0.85); line-height: 1.7; }
+  .insight-box strong { color: var(--teal); }
+  .warning-box { background: rgba(232,57,74,0.05); border: 1px solid rgba(232,57,74,0.2); border-left: 3px solid var(--red); border-radius: 0 6px 6px 0; padding: 16px 20px; margin-bottom: 24px; font-size: 13px; color: rgba(240,244,248,0.85); line-height: 1.7; }
+  .warning-box strong { color: var(--red); }
+
+  .answer-block { background: var(--card2); border: 1px solid var(--border); border-radius: 8px; padding: 28px; margin-bottom: 24px; }
+  .answer-block h2 { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; margin-bottom: 14px; display: flex; align-items: center; gap: 12px; }
+  .q-badge { background: var(--teal); color: var(--navy); font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 3px; letter-spacing: 1px; }
+  .answer-block p { font-size: 13px; line-height: 1.8; color: rgba(240,244,248,0.85); margin-bottom: 12px; }
+  .answer-block ul { list-style: none; padding-left: 0; }
+  .answer-block ul li { font-size: 13px; color: rgba(240,244,248,0.85); line-height: 1.7; padding-left: 20px; position: relative; margin-bottom: 4px; }
+  .answer-block ul li::before { content: '→'; position: absolute; left: 0; color: var(--teal); }
+
+  .forecast-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 20px; margin-bottom: 28px; }
+  .forecast-card { background: rgba(0,212,184,0.06); border: 1px solid rgba(0,212,184,0.2); border-radius: 8px; padding: 20px; text-align: center; }
+  .forecast-card .f-month { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 2px; color: var(--grey); margin-bottom: 8px; }
+  .forecast-card .f-val { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: var(--teal); letter-spacing: 1px; }
+
+  .rec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-top: 20px; }
+  .rec-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+  .rec-card h4 { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .rec-card .rec-cat { font-size: 10px; letter-spacing: 2px; color: var(--teal); text-transform: uppercase; margin-bottom: 10px; font-family: 'DM Mono', monospace; }
+  .rec-card p { font-size: 12px; color: var(--grey); line-height: 1.6; }
+  .rec-card.danger { border-color: rgba(232,57,74,0.3); }
+  .rec-card.danger .rec-cat { color: var(--red); }
+
+  .scrollable { max-height: 420px; overflow-y: auto; }
+  .scrollable::-webkit-scrollbar { width: 4px; }
+  .scrollable::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--navy); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- LOADING STATE -->
+<div id="loading">
+  <div class="spinner"></div>
+  <p>CARREGANDO DATA.JSON...</p>
+</div>
+
+<!-- ERROR STATE -->
+<div id="error-msg" style="display:none; flex-direction:column">
+  <h2>⚠ data.json não encontrado</h2>
+  <p>O dashboard não conseguiu carregar os dados. Execute o pipeline Python primeiro para gerar o arquivo <code>data.json</code>:</p>
+  <code>python pipeline.py</code>
+  <p style="margin-top:12px; font-size:12px;">Depois abra este arquivo HTML no mesmo diretório onde o <code>data.json</code> foi gerado.<br>Se estiver usando VS Code, use a extensão <strong>Live Server</strong> para servir os arquivos localmente.</p>
+</div>
+
+<!-- DASHBOARD (oculto até carregar) -->
+<div id="app" style="display:none">
+
+<header>
+  <div class="header-tag">Desafio Técnico · Dados 2023–2024</div>
+  <h1>LH <span>Nautical</span></h1>
+  <div class="header-sub" id="header-period">Análise Completa de Dados · Aguardando carregamento...</div>
+</header>
+
+<nav>
+  <button class="active" onclick="showSection('eda',this)">📊 EDA</button>
+  <button onclick="showSection('vendas',this)">💰 Vendas</button>
+  <button onclick="showSection('clientes',this)">👥 Clientes</button>
+  <button onclick="showSection('previsao',this)">📈 Previsão</button>
+  <button onclick="showSection('recomendacao',this)">🧭 Recomendações</button>
+</nav>
+
+<main>
+
+<!-- ── EDA ─────────────────────────────────────────────────────────────────── -->
+<div id="eda" class="section active">
+  <div class="section-title">Visão Geral dos Dados</div>
+  <div class="section-desc">KPIs gerais extraídos após limpeza e enriquecimento dos 4 datasets brutos.</div>
+  <div class="kpi-grid" id="kpi-grid"></div>
+  <div class="grid-2">
+    <div class="chart-card">
+      <h3>Receita Mensal</h3>
+      <div class="chart-subtitle">Evolução mês a mês — 2023–2024</div>
+      <div class="chart-wrap tall"><canvas id="chartMonthly"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Receita por Categoria</h3>
+      <div class="chart-subtitle">Participação percentual no total de receita</div>
+      <div class="chart-wrap tall"><canvas id="chartCategory"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── VENDAS ──────────────────────────────────────────────────────────────── -->
+<div id="vendas" class="section">
+  <div class="section-title">Análise de Vendas</div>
+  <div class="section-desc">Performance de receita, margem e produtos com prejuízo acumulado.</div>
+  <div id="warning-vendas" class="warning-box"></div>
+  <div class="grid-2">
+    <div class="chart-card">
+      <h3>Lucro / Prejuízo Mensal</h3>
+      <div class="chart-subtitle">Resultado líquido após custo de importação (USD × câmbio)</div>
+      <div class="chart-wrap tall"><canvas id="chartMonthlyProfit"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Receita Média por Dia da Semana</h3>
+      <div class="chart-subtitle">Inclui dias sem venda (= R$ 0) no cálculo da média</div>
+      <div class="chart-wrap tall"><canvas id="chartWeekday"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <h3>Top 15 Produtos com Maior Prejuízo Acumulado</h3>
+    <div class="chart-subtitle">Prejuízo total em R$ — Questão 4</div>
+    <div class="chart-wrap xtall"><canvas id="chartLoss"></canvas></div>
+  </div>
+  <div class="answer-block">
+    <h2><span class="q-badge">Q4</span> Produtos com Prejuízo</h2>
+    <div id="loss-summary"></div>
+  </div>
+  <div class="answer-block">
+    <h2><span class="q-badge">Q6</span> Vendas por Dia da Semana</h2>
+    <div id="weekday-summary"></div>
+  </div>
+</div>
+
+<!-- ── CLIENTES ────────────────────────────────────────────────────────────── -->
+<div id="clientes" class="section">
+  <div class="section-title">Análise de Clientes</div>
+  <div class="section-desc">Ranking de clientes por lucro acumulado (menor prejuízo = melhor posição).</div>
+  <div class="insight-box">
+    <strong>📌 Nota metodológica:</strong> Como a empresa opera com margem negativa na maioria das transações, o ranking prioriza o cliente com <em>menor prejuízo acumulado</em>. A tabela inclui o mix de categorias de cada cliente para explicar a posição no ranking.
+  </div>
+  <div class="chart-card">
+    <h3>Top 15 Clientes — Receita vs Resultado Líquido</h3>
+    <div class="chart-subtitle">Questão 5 — Barras azuis = receita bruta; barras vermelhas = prejuízo acumulado</div>
+    <div class="chart-wrap xtall"><canvas id="chartClients"></canvas></div>
+  </div>
+  <div class="answer-block">
+    <h2><span class="q-badge">Q5</span> Ranking Completo</h2>
+    <div class="scrollable">
+      <table class="data-table">
+        <thead><tr>
+          <th>#</th><th>Cliente</th>
+          <th>Receita</th><th>Resultado</th>
+          <th>Pedidos</th><th>Margem Média</th>
+          <th>% Eletrônicos</th><th>% Propulsão</th><th>% Ancoragem</th>
+        </tr></thead>
+        <tbody id="clients-table"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ── PREVISÃO ────────────────────────────────────────────────────────────── -->
+<div id="previsao" class="section">
+  <div class="section-title">Previsão de Demanda</div>
+  <div class="section-desc">Projeção de receita para Jan–Mar 2025 via regressão linear sobre 24 meses históricos.</div>
+  <div class="forecast-grid" id="forecast-cards"></div>
+  <div class="grid-2">
+    <div class="chart-card">
+      <h3>Histórico + Projeção 2025</h3>
+      <div class="chart-subtitle">Linha tracejada = projeção linear</div>
+      <div class="chart-wrap tall"><canvas id="chartForecast"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Índice de Sazonalidade por Mês</h3>
+      <div class="chart-subtitle">Desvio % em relação à média mensal</div>
+      <div class="chart-wrap tall"><canvas id="chartSeason"></canvas></div>
+    </div>
+  </div>
+  <div class="answer-block">
+    <h2><span class="q-badge">Q7</span> Metodologia e Limitações</h2>
+    <ul>
+      <li><strong>Modelo:</strong> Regressão linear com tendência temporal (scikit-learn LinearRegression).</li>
+      <li><strong>Por que não ARIMA/Prophet?</strong> Com apenas 24 pontos, modelos complexos tendem a overfit. Com 3+ anos de dados, migrar para Prophet seria recomendado.</li>
+      <li><strong>Premissa de câmbio:</strong> Taxa fixa de R$ 5,15/USD. Incluir BRL/USD como variável exógena melhoraria a previsão de margem.</li>
+      <li><strong>Alerta:</strong> Aumentar volume de Propulsão sem reprecificar aumenta o prejuízo proporcionalmente.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ── RECOMENDAÇÃO ────────────────────────────────────────────────────────── -->
+<div id="recomendacao" class="section">
+  <div class="section-title">Sistema de Recomendações</div>
+  <div class="section-desc">Produtos elegíveis para a campanha com base em margem positiva, volume e perfil de cliente.</div>
+  <div class="insight-box">
+    <strong>🎯 Critérios:</strong> (1) Margem positiva no período · (2) Volume de vendas confirmando demanda · (3) Cross-sell por categoria do cliente.
+  </div>
+  <div class="chart-card">
+    <h3>Top Produtos Lucrativos vs Deficitários</h3>
+    <div class="chart-subtitle">Verde = recomendar na campanha · Vermelho = suspender ou reprecificar</div>
+    <div class="chart-wrap xtall"><canvas id="chartRec"></canvas></div>
+  </div>
+  <div class="rec-grid" id="rec-cards"></div>
+</div>
+
+</main>
+</div><!-- #app -->
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════════════════════
+const fmt  = (v, decimals = 0) => `R$ ${(v/1e6).toFixed(decimals)}M`;
+const fmtK = (v) => v >= 1e6 ? `R$ ${(v/1e6).toFixed(1)}M` : `R$ ${(v/1e3).toFixed(0)}K`;
+
+const TEAL  = '#00d4b8';
+const AMBER = '#f5a623';
+const RED   = '#e8394a';
+const BLUE  = '#4a9eff';
+const NAVY  = '#0d1f38';
+const GRID  = 'rgba(136,153,170,0.12)';
+
+Chart.defaults.color = '#8899aa';
+Chart.defaults.font.family = 'DM Sans';
+Chart.defaults.font.size = 12;
+
+const TOOLTIP = {
+  backgroundColor: '#0d1f38', borderColor: 'rgba(0,212,184,0.3)',
+  borderWidth: 1, titleColor: '#00d4b8', bodyColor: '#f0f4f8',
+  padding: 12, cornerRadius: 4
+};
+
+function mkChart(id, type, data, opts = {}) {
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  return new Chart(ctx, { type, data, options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { ...TOOLTIP } },
+    ...opts
+  }});
+}
+
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function catBadge(cat) {
+  const map = { 'Eletrônicos': 'badge-elet', 'Propulsão': 'badge-prop', 'Ancoragem': 'badge-anc' };
+  return `<span class="badge ${map[cat] || ''}">${cat}</span>`;
+}
+
+// ════════════════════════════════════════════════════════════════
+// RENDERIZAÇÃO — chamada após carregar data.json
+// ════════════════════════════════════════════════════════════════
+function render(D) {
+
+  // ── Header ──────────────────────────────────────────────────
+  document.getElementById('header-period').textContent =
+    `Período: ${D.kpis.period_start} → ${D.kpis.period_end}  ·  ${D.kpis.total_records.toLocaleString('pt-BR')} transações`;
+
+  // ── KPIs ────────────────────────────────────────────────────
+  const kpiDefs = [
+    { label: 'Receita Total',        value: fmt(D.kpis.total_revenue, 2) + 'M'.replace('MM','M'), color: 'teal',  note: '2 anos de operação', raw: `R$ ${(D.kpis.total_revenue/1e9).toFixed(2)}B` },
+    { label: 'Resultado Líquido',    value: fmt(D.kpis.total_profit, 1),  color: 'red',   note: 'Prejuízo operacional' },
+    { label: 'Margem Média',         value: `${D.kpis.avg_margin.toFixed(1)}%`, color: 'red', note: 'Custo supera preço' },
+    { label: 'Vendas c/ Prejuízo',   value: `${D.kpis.loss_sales_pct}%`, color: 'amber', note: 'Das transações totais' },
+    { label: 'Clientes Únicos',      value: D.kpis.unique_clients,        color: 'blue',  note: 'Base CRM completa' },
+    { label: 'Produtos Únicos',      value: D.kpis.unique_products,       color: 'teal',  note: 'Com histórico de custo' },
+    { label: 'Ticket Médio',         value: fmtK(D.kpis.avg_ticket),      color: 'amber', note: 'Por transação' },
+    { label: 'Total Transações',     value: D.kpis.total_records.toLocaleString('pt-BR'), color: 'blue', note: `Jan/2023 – Dez/2024` },
+  ];
+  document.getElementById('kpi-grid').innerHTML = kpiDefs.map(k => `
+    <div class="kpi-card ${k.color}">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value ${k.color}">${k.raw || k.value}</div>
+      <div class="kpi-note">${k.note}</div>
+    </div>`).join('');
+
+  // ── Monthly revenue chart ────────────────────────────────────
+  mkChart('chartMonthly', 'line', {
+    labels: D.monthly.map(m => m.month.slice(0,7).replace('-','/')),
+    datasets: [{ data: D.monthly.map(m => m.revenue/1e6), borderColor: TEAL,
+      backgroundColor: 'rgba(0,212,184,0.07)', fill: true, tension: 0.4,
+      pointRadius: 3, pointBackgroundColor: TEAL }]
+  }, { scales: {
+    x: { grid: { display: false }, ticks: { maxRotation: 45, font: { size: 10 } } },
+    y: { grid: { color: GRID }, ticks: { callback: v => `R$${v}M` } }
+  }, plugins: { tooltip: { ...TOOLTIP, callbacks: { label: c => `R$ ${c.parsed.y.toFixed(1)}M` } } } });
+
+  // ── Category donut ───────────────────────────────────────────
+  mkChart('chartCategory', 'doughnut', {
+    labels: D.categories.map(c => c.category),
+    datasets: [{ data: D.categories.map(c => c.revenue),
+      backgroundColor: [AMBER, BLUE, TEAL], borderColor: NAVY, borderWidth: 3 }]
+  }, { plugins: {
+    legend: { display: true, position: 'bottom', labels: { color: '#8899aa', padding: 16 } },
+    tooltip: { ...TOOLTIP, callbacks: { label: c => `${c.label}: ${fmt(c.parsed, 1)}` } }
+  }});
+
+  // ── Warning box ──────────────────────────────────────────────
+  document.getElementById('warning-vendas').innerHTML =
+    `<strong>⚠ Alerta Crítico:</strong> A empresa opera com margem negativa em <strong>${D.kpis.loss_sales_pct}%</strong> das transações.
+    O custo de importação (USD) supera o preço de venda (BRL) em grande parte dos produtos de Propulsão.
+    Propulsão responde por <strong>${fmt(D.categories.find(c=>c.category==='Propulsão')?.profit || 0, 1)}</strong> do resultado total.`;
+
+  // ── Monthly profit chart ─────────────────────────────────────
+  mkChart('chartMonthlyProfit', 'bar', {
+    labels: D.monthly.map(m => m.month.slice(0,7)),
+    datasets: [{ data: D.monthly.map(m => m.profit/1e6),
+      backgroundColor: D.monthly.map(m => m.profit >= 0 ? 'rgba(0,212,184,0.7)' : 'rgba(232,57,74,0.65)'),
+      borderRadius: 3 }]
+  }, { scales: {
+    x: { grid: { display: false }, ticks: { maxRotation: 45, font: { size: 10 } } },
+    y: { grid: { color: GRID }, ticks: { callback: v => `R$${v}M` } }
+  }, plugins: { tooltip: { ...TOOLTIP, callbacks: { label: c => `R$ ${c.parsed.y.toFixed(2)}M` } } } });
+
+  // ── Weekday chart ────────────────────────────────────────────
+  mkChart('chartWeekday', 'bar', {
+    labels: D.weekday.map(w => w.weekday),
+    datasets: [{ data: D.weekday.map(w => w.revenue/1e6),
+      backgroundColor: D.weekday.map(w => w.weekday === 'Sexta' ? TEAL : 'rgba(0,212,184,0.55)'),
+      borderRadius: 4 }]
+  }, { scales: {
+    x: { grid: { display: false } },
+    y: { grid: { color: GRID }, min: Math.min(...D.weekday.map(w=>w.revenue))*0.95/1e6,
+      ticks: { callback: v => `R$${v}M` } }
+  }, plugins: { tooltip: { ...TOOLTIP, callbacks: { label: c => `R$ ${c.parsed.y.toFixed(2)}M` } } } });
+
+  // ── Loss products chart ──────────────────────────────────────
+  const lp = D.loss_products;
+  mkChart('chartLoss', 'bar', {
+    labels: lp.map(p => p.product_name.replace('Motor de Popa','M. Popa').replace('Motor Diesel','M. Diesel').replace('Motor Elétrico','M. Elét.')),
+    datasets: [{ data: lp.map(p => p.total_loss/1e6),
+      backgroundColor: lp.map((p,i) => i < 3 ? RED : 'rgba(232,57,74,0.5)'),
+      borderRadius: 4 }]
+  }, { indexAxis: 'y', scales: {
+    x: { grid: { color: GRID }, ticks: { callback: v => `R$${v}M` } },
+    y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+  }, plugins: { tooltip: { ...TOOLTIP, callbacks: { label: c => `Prejuízo: R$ ${c.parsed.x.toFixed(1)}M` } } } });
+
+  // ── Loss summary text ────────────────────────────────────────
+  const worstProd = lp[0];
+  document.getElementById('loss-summary').innerHTML = `
+    <p>Foram identificadas <strong style="color:var(--red)">${D.kpis.loss_sales_pct}% das vendas com resultado negativo</strong>.
+    O maior destruidor de valor é o <strong>${worstProd.product_name}</strong> com
+    <strong style="color:var(--red)">R$ ${(worstProd.total_loss/1e6).toFixed(1)}M</strong> de prejuízo em ${worstProd.n_sales} vendas.</p>
+    <ul>
+      ${lp.slice(0,5).map(p => `<li><strong>${p.product_name}</strong> — R$ ${(p.total_loss/1e6).toFixed(1)}M em ${p.n_sales} vendas ${catBadge(p.category)}</li>`).join('')}
+    </ul>`;
+
+  // ── Weekday summary ──────────────────────────────────────────
+  const best = D.weekday.reduce((a,b) => a.revenue > b.revenue ? a : b);
+  const worst = D.weekday.reduce((a,b) => a.revenue < b.revenue ? a : b);
+  document.getElementById('weekday-summary').innerHTML = `
+    <ul>
+      <li><strong>${best.weekday}-feira</strong> lidera com média de <strong>R$ ${(best.revenue/1e6).toFixed(2)}M</strong> — melhor dia para campanhas</li>
+      <li><strong>${worst.weekday}</strong> tem a menor média: <strong>R$ ${(worst.revenue/1e6).toFixed(2)}M</strong></li>
+      <li>Variação entre melhor e pior dia: <strong>${(((best.revenue - worst.revenue)/worst.revenue)*100).toFixed(1)}%</strong> — demanda relativamente estável na semana</li>
+    </ul>`;
+
+  // ── Clients chart ────────────────────────────────────────────
+  const cl = D.clients;
+  mkChart('chartClients', 'bar', {
+    labels: cl.map(c => c.name.split(' ').slice(0,2).join(' ')),
+    datasets: [
+      { label: 'Receita (R$M)', data: cl.map(c => c.total_revenue/1e6),
+        backgroundColor: 'rgba(74,158,255,0.35)', borderColor: BLUE, borderWidth: 1, borderRadius: 3, yAxisID: 'y' },
+      { label: 'Resultado (R$M)', data: cl.map(c => c.total_profit/1e6),
+        backgroundColor: 'rgba(232,57,74,0.6)', borderColor: RED, borderWidth: 1, borderRadius: 3, yAxisID: 'y2' }
+    ]
+  }, { plugins: {
+    legend: { display: true, position: 'top', labels: { color: '#8899aa', padding: 16 } },
+    tooltip: { ...TOOLTIP }
+  }, scales: {
+    x: { grid: { display: false }, ticks: { maxRotation: 45, font: { size: 10 } } },
+    y:  { grid: { color: GRID }, position: 'left',  ticks: { callback: v => `R$${v}M` } },
+    y2: { grid: { display: false }, position: 'right', ticks: { callback: v => `R$${v}M` } }
+  }});
+
+  // ── Clients table ────────────────────────────────────────────
+  document.getElementById('clients-table').innerHTML = cl.map((c, i) => `
+    <tr>
+      <td><strong style="color:var(--teal)">${i+1}</strong></td>
+      <td>${c.name}</td>
+      <td class="num">R$ ${(c.total_revenue/1e6).toFixed(1)}M</td>
+      <td class="num"><span class="badge badge-neg">R$ ${(c.total_profit/1e6).toFixed(2)}M</span></td>
+      <td class="num">${c.num_orders}</td>
+      <td class="num">${c.avg_margin.toFixed(1)}%</td>
+      <td class="num">${(c['Eletrônicos'] || 0).toFixed(1)}%</td>
+      <td class="num">${(c['Propulsão'] || 0).toFixed(1)}%</td>
+      <td class="num">${(c['Ancoragem'] || 0).toFixed(1)}%</td>
+    </tr>`).join('');
+
+  // ── Forecast cards ───────────────────────────────────────────
+  document.getElementById('forecast-cards').innerHTML = D.forecast.map(f => `
+    <div class="forecast-card">
+      <div class="f-month">${f.month}</div>
+      <div class="f-val">R$ ${(f.revenue/1e6).toFixed(1)}M</div>
+    </div>`).join('');
+
+  // ── Forecast chart ───────────────────────────────────────────
+  const histLabels = D.monthly.map(m => m.month.slice(0,7));
+  const histValues = D.monthly.map(m => m.revenue/1e6);
+  const fcLabels   = D.forecast.map(f => f.month);
+  const fcValues   = D.forecast.map(f => f.revenue/1e6);
+  const joinVal    = [histValues[histValues.length-1], ...fcValues];
+  const joinLabel  = [histLabels[histLabels.length-1], ...fcLabels];
+
+  mkChart('chartForecast', 'line', {
+    labels: [...histLabels, ...fcLabels],
+    datasets: [
+      { label: 'Real', data: [...histValues, null, null, null], borderColor: TEAL,
+        backgroundColor: 'rgba(0,212,184,0.07)', fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: TEAL },
+      { label: 'Projeção', data: [...Array(histValues.length-1).fill(null), ...joinVal],
+        borderColor: AMBER, borderDash: [6,4], tension: 0.2, fill: false, pointRadius: 4, pointBackgroundColor: AMBER }
+    ]
+  }, { plugins: {
+    legend: { display: true, position: 'top', labels: { color: '#8899aa', padding: 16 } },
+    tooltip: { ...TOOLTIP, callbacks: { label: c => c.parsed.y ? `R$ ${c.parsed.y.toFixed(1)}M` : null } }
+  }, scales: {
+    x: { grid: { display: false }, ticks: { maxRotation: 45, font: { size: 10 } } },
+    y: { grid: { color: GRID }, min: 85, ticks: { callback: v => `R$${v}M` } }
+  }});
+
+  // ── Seasonality chart ────────────────────────────────────────
+  mkChart('chartSeason', 'bar', {
+    labels: D.seasonality.map(s => s.month_name),
+    datasets: [{ data: D.seasonality.map(s => s.index),
+      backgroundColor: D.seasonality.map(s => s.index >= 0 ? 'rgba(0,212,184,0.7)' : 'rgba(232,57,74,0.7)'),
+      borderRadius: 4 }]
+  }, { scales: {
+    x: { grid: { display: false } },
+    y: { grid: { color: GRID }, ticks: { callback: v => `${v>0?'+':''}${v}%` } }
+  }, plugins: { tooltip: { ...TOOLTIP, callbacks: { label: c => `${c.parsed.y>0?'+':''}${c.parsed.y}% da média` } } } });
+
+  // ── Recommendations chart ────────────────────────────────────
+  const tp   = D.top_profitable;
+  const loss5 = D.loss_products.slice(0,5);
+  const recLabels = [...tp.map(p => p.product_name.split(' ').slice(0,4).join(' ')),
+                     ...loss5.map(p => p.product_name.split(' ').slice(0,4).join(' '))];
+  const recData   = [...tp.map(p => p.total_profit/1e6), ...loss5.map(p => p.total_loss/1e6)];
+  const recColors = [...tp.map(() => 'rgba(0,212,184,0.7)'), ...loss5.map(() => 'rgba(232,57,74,0.65)')];
+
+  mkChart('chartRec', 'bar', {
+    labels: recLabels,
+    datasets: [{ data: recData, backgroundColor: recColors, borderRadius: 4 }]
+  }, { indexAxis: 'y', scales: {
+    x: { grid: { color: GRID }, ticks: { callback: v => `R$${v}M` } },
+    y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+  }, plugins: { tooltip: { ...TOOLTIP, callbacks: { label: c => `R$ ${c.parsed.x.toFixed(2)}M` } } } });
+
+  // ── Recommendation cards ─────────────────────────────────────
+  document.getElementById('rec-cards').innerHTML = [
+    ...tp.slice(0,5).map(p => `
+      <div class="rec-card">
+        <div class="rec-cat">${p.category} — Recomendar</div>
+        <h4>${p.product_name}</h4>
+        <p>Lucro acumulado: <strong style="color:var(--teal)">R$ ${(p.total_profit/1e6).toFixed(2)}M</strong> em ${p.n_sales} vendas.</p>
+      </div>`),
+    `<div class="rec-card danger">
+      <div class="rec-cat">⚠ Evitar na Campanha</div>
+      <h4>${loss5[0].product_name}</h4>
+      <p>Maior destruidor de valor: <strong style="color:var(--red)">R$ ${(loss5[0].total_loss/1e6).toFixed(1)}M</strong> de prejuízo. Suspender ou reprecificar antes de qualquer promoção.</p>
+    </div>`
+  ].join('');
+}
+
+// ════════════════════════════════════════════════════════════════
+// INICIALIZAÇÃO — lê data.json e chama render()
+// ════════════════════════════════════════════════════════════════
+fetch('data.json')
+  .then(r => {
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return r.json();
+  })
+  .then(data => {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    render(data);
+  })
+  .catch(err => {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('error-msg').style.display = 'flex';
+    console.error('Erro ao carregar data.json:', err);
+  });
+</script>
+</body>
+</html>
